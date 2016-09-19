@@ -2,10 +2,12 @@
   "name": "erento-project",
   "version": "0.0.1",
   "scripts": {
-    "start": "node --expose-gc app.js"
+    "start": "node --expose-gc app.js",
+    "http-server": "node node_modules/.bin/http-server ./html"
   },
   "dependencies": {
     "express": "^4.10.6",
+    "http-server": "^0.9.0",
     "mysql": "^2.5.4"
   }
 }

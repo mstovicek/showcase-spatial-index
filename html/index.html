@@ -1,24 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Locations</title>
+    <meta charset="UTF-8">
+    <title>Locations</title>
 </head>
 <body>
-	demo
 
-	<script type="text/javascript" src="jquery.min.js"></script>
-	<script type="text/javascript">
-	$(document).ready(function() {
-		console.log('ready');
-	});
-        // var urlParams = rows.map(function (obj) {
-        //     return 'markers=' + obj.latitude + ',' + obj.longitude + ''
-        // }).slice(0, 40).join('&');
+    <ul id="links">
+        <li><a href="?lat=52.516248&amp;lon=13.377709">Brandenburger Tor</a></li>
+        <li><a href="?lat=52.507572&amp;lon=13.390573">Checkpoint Charlie</a></li>
+        <li><a href="?lat=52.567122&amp;lon=13.411610">S+U Berlin-Pankow</a></li>
+        <li><a href="?lat=52.503162&amp;lon=13.468785">S+U Berlin-Ostkreuz</a></li>
+    </ul>
+    <img src="#" alt="" id="map" />
+    <ul id="locations"></ul>
 
-        // var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' 
-        //     + lat + ',' + lon + '&zoom=13&size=800x600&maptype=roadmap'
-        //     + '&markers=color:blue%7C' + lat + ',' + lon + '&' + urlParams;
-	</script>
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $.urlParam = function(name){
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            return results[1] || 0;
+        }
+
+        var lat = $.urlParam('lat'),
+            lon = $.urlParam('lon'),
+            dist = 5;
+
+        $.get('http://docker.dev:3000/closest/' + lat + '/' + lon + '/' + dist + '?' + ((new Date()).getTime()), function(data) {
+
+            $('#locations').empty();
+            data.locations.forEach(function (place) {
+                $('#locations').append('<li>' + place.description + ' (' + (Math.round(place.distance_km * 100) / 100) + 'km)</li>')
+            });
+
+            var urlParams = data.locations.map(function (obj) {
+                return 'markers=' + obj.latitude + ',' + obj.longitude + ''
+            }).slice(0, 10).join('&');
+
+            var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' 
+                + lat + ',' + lon + '&zoom=14&size=800x400&maptype=roadmap'
+                + '&markers=color:blue%7C' + lat + ',' + lon + '&' + urlParams;
+
+            $('#map').attr('src', url + '&amp;' + ((new Date()).getTime()));
+        });
+    });
+    </script>
 </body>
 </html>
