@@ -1,0 +1,11 @@
+{
+  "name": "erento-project",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node --expose-gc app.js"
+  },
+  "dependencies": {
+    "express": "^4.10.6",
+    "mysql": "^2.5.4"
+  }
+}

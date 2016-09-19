@@ -1,0 +1,31 @@
+mysql_spatial:
+    image: mysql/mysql-server:latest
+    container_name: mysql_spatial
+    expose:
+        - 33060
+    ports:
+        - 3306:3306
+    environment:
+        MYSQL_ROOT_PASSWORD: pass
+
+node:
+    image: node:6.5.0-slim
+    container_name: node_spatial
+    ports: 
+        - 3000:3000
+    links: 
+        - mysql_spatial
+    volumes:
+        - .:/usr/src/app
+    working_dir: /usr/src/app
+    command: npm start
+
+nginx:
+    image: nginx:alpine
+    container_name: nginx_spatial
+    ports:
+        - 80:80
+    links:
+        - node
+    volumes:
+        - ./html:/usr/share/nginx/html
