@@ -7,10 +7,10 @@
 <body>
 
     <ul id="links">
-        <li><a href="?lat=52.516248&amp;lon=13.377709">Brandenburger Tor</a></li>
-        <li><a href="?lat=52.507572&amp;lon=13.390573">Checkpoint Charlie</a></li>
-        <li><a href="?lat=52.567122&amp;lon=13.411610">S+U Berlin-Pankow</a></li>
-        <li><a href="?lat=52.503162&amp;lon=13.468785">S+U Berlin-Ostkreuz</a></li>
+        <li><a href="?lat=52.516248&amp;lon=13.377709&amp;dist=5">Brandenburger Tor</a></li>
+        <li><a href="?lat=52.507572&amp;lon=13.390573&amp;dist=5">Checkpoint Charlie</a></li>
+        <li><a href="?lat=52.567122&amp;lon=13.411610&amp;dist=5">S+U Berlin-Pankow</a></li>
+        <li><a href="?lat=52.503162&amp;lon=13.468785&amp;dist=5">S+U Berlin-Ostkreuz</a></li>
     </ul>
     <img src="#" alt="" id="map" />
     <ul id="locations"></ul>
@@ -18,32 +18,44 @@
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript">
     $(document).ready(function() {
-        $.urlParam = function(name){
+        $.urlParam = function(name, def) {
             var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-            return results[1] || 0;
+            if (!results) return def;
+            return results[1] || def;
         }
 
-        var lat = $.urlParam('lat'),
-            lon = $.urlParam('lon'),
-            dist = 5;
+        var lat = $.urlParam('lat', null),
+            lon = $.urlParam('lon', null),
+            dist = $.urlParam('dist', 20);
 
-        $.get('http://docker.dev:3000/closest/' + lat + '/' + lon + '/' + dist + '?' + ((new Date()).getTime()), function(data) {
+        if (lat != null && lon != null) {
+            $.get('http://docker.dev:3000/closest/' + lat + '/' + lon + '/' + dist + '?' + ((new Date()).getTime()), function(data) {
 
-            $('#locations').empty();
-            data.locations.forEach(function (place) {
-                $('#locations').append('<li>' + place.description + ' (' + (Math.round(place.distance_km * 100) / 100) + 'km)</li>')
+                $('#locations').empty();
+                data.locations.forEach(function (place) {
+                    $('#locations').append(
+                        '<li>' 
+                        + place.description 
+                        + ' (' 
+                        + '<a href="https://www.google.com/maps/dir/' + lat + ',' + lon + '/' + place.latitude + ',' + place.longitude + '" target="_blank">'
+                        + '~' + (Math.round(place.distance_km * 100) / 100) + 'km'
+                        + '</a>'
+                        + ')'
+                        + '</li>'
+                    );
+                });
+
+                var urlParams = data.locations.map(function (obj) {
+                    return 'markers=' + obj.latitude + ',' + obj.longitude + ''
+                }).slice(0, 10).join('&');
+
+                var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' 
+                    + lat + ',' + lon + '&zoom=14&size=800x400&maptype=roadmap'
+                    + '&markers=color:blue%7C' + lat + ',' + lon + '&' + urlParams;
+
+                $('#map').attr('src', url + '&amp;' + ((new Date()).getTime()));
             });
-
-            var urlParams = data.locations.map(function (obj) {
-                return 'markers=' + obj.latitude + ',' + obj.longitude + ''
-            }).slice(0, 10).join('&');
-
-            var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' 
-                + lat + ',' + lon + '&zoom=14&size=800x400&maptype=roadmap'
-                + '&markers=color:blue%7C' + lat + ',' + lon + '&' + urlParams;
-
-            $('#map').attr('src', url + '&amp;' + ((new Date()).getTime()));
-        });
+        }
     });
     </script>
 </body>
