@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `locations` (
+DROP TABLE `locations`;
+
+CREATE TABLE `locations` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `geom` geometry DEFAULT NULL,
   `latitude` decimal(10,8) NOT NULL,
