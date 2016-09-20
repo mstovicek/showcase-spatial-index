@@ -12,10 +12,10 @@ Assume you have a list of 100k addresses with geo coordinates. Design a system w
 ```
 $ npm install
 $ docker-compose up -d
-$ docker-compose restart node
-$ docker exec -i -t mysql_spatial mysql -uroot -ppass -e 'CREATE DATABASE `a` DEFAULT CHARACTER SET = `utf8`;'
+$ docker exec -i -t mysql_spatial mysql -uroot -ppass -e 'CREATE DATABASE `spatial` DEFAULT CHARACTER SET = `utf8`;'
 $ # uncomment data source in ./database/init.sql
 $ docker exec -i -t mysql_spatial mysql -uroot -ppass -e 'USE `spatial`; SOURCE /usr/src/app/database/init.sql;'
+$ docker-compose restart node
 $ npm run http-server
 ```
 
