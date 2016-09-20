@@ -5,6 +5,8 @@ mysql_spatial:
         - 33060
     ports:
         - 3306:3306
+    volumes:
+        - .:/usr/src/app
     environment:
         MYSQL_ROOT_PASSWORD: pass
 
